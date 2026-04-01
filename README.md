@@ -1,315 +1,421 @@
-# Buffalo Breed Recognition System
+# 🐃 Buffalo Breed Recognition System
 
-Production-grade AI system for identifying Indian buffalo breeds, designed for integration with the Bharat Pashudhan App (BPA).
+AI-powered buffalo breed identification using deep learning with two-stage classification, multi-image prediction, and intelligent decision support.
+
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
+
+---
 
 ## 🎯 Overview
 
-This system uses deep learning (PyTorch + Transfer Learning) to classify 17 Indian buffalo breeds from images, providing:
-- Top-3 predictions with confidence scores
-- Robust handling of real-world conditions (varying lighting, backgrounds, poses)
-- Production-ready REST API
-- Comprehensive evaluation metrics
+Production-grade AI system for identifying Indian buffalo breeds with advanced features:
+
+- **Two-Stage Classification**: Animal type detection (cattle/buffalo) → Breed identification
+- **17 Buffalo Breeds**: Comprehensive Indian buffalo breed recognition
+- **Multi-Image Prediction**: Aggregate predictions from multiple images for higher accuracy
+- **Decision Support System**: ACCEPTED/REVIEW/REJECTED recommendations with confidence analysis
+- **Domain Intelligence**: Breed-specific features and characteristics database
+- **REST API**: Production-ready FastAPI server with interactive documentation
+- **Web Interface**: User-friendly frontend for image upload and prediction
+- **GPU Acceleration**: CUDA support for fast inference
+
+---
 
 ## 📊 Supported Breeds
 
-The system recognizes 17 buffalo breeds:
-- Banni, Bargur, Bhadwari, Chhattisgarhi, Chilika
-- Gojri, Jaffarabadi, Kalahandi, Luit
-- Marathwada, Mehsana, Murrah, Nagpuri
-- Nili-Ravi, Pandharpuri, Surti, Toda
+**Buffalo (17 breeds)**:
+Banni, Bargur, Bhadwari, Chhattisgarhi, Chilika, Gojri, Jaffarabadi, Kalahandi, Luit, Marathwada, Mehsana, Murrah, Nagpuri, Nili-Ravi, Pandharpuri, Surti, Toda
 
-## 🏗️ Architecture
+**Dataset**: 5,564 images across 17 breeds
 
-- **Model**: MobileNetV2 (lightweight, mobile-friendly)
-- **Framework**: PyTorch
-- **Input**: 224x224 RGB images
-- **Output**: Top-3 breed predictions with confidence scores
-- **Deployment**: FastAPI REST API
+---
 
-## 📁 Project Structure
+## 🚀 Quick Start
 
-```
-breed_recognition_for_cattle_and_buffaloes/
-├── buffalo/                    # Dataset (17 breed folders)
-├── src/
-│   ├── __init__.py
-│   ├── utils.py               # Utility functions
-│   ├── dataset.py             # Dataset handling & augmentation
-│   ├── model.py               # Model architecture
-│   ├── train.py               # Training loop
-│   ├── evaluate.py            # Evaluation & metrics
-│   └── inference.py           # Inference system
-├── main.py                    # Main training script
-├── api.py                     # FastAPI deployment
-├── test_inference.py          # Test inference
-├── config.yaml                # Configuration
-├── requirements.txt           # Dependencies
-└── README.md                  # This file
-```
-
-## 🚀 Setup & Installation
-
-### Step 1: Environment Setup
+### Installation
 
 ```bash
-# Create virtual environment (Python 3.10 recommended)
-python -m venv venv
+# Clone repository
+git clone https://github.com/yourusername/buffalo-breed-recognition.git
+cd buffalo-breed-recognition
 
-# Activate virtual environment
-# Windows:
-venv\Scripts\activate
-# Linux/Mac:
-source venv/bin/activate
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# or
+.\venv\Scripts\activate  # Windows
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### Step 2: Verify GPU (Optional but Recommended)
+See [INSTALLATION.md](INSTALLATION.md) for detailed setup instructions.
 
-```python
-import torch
-print(f"CUDA Available: {torch.cuda.is_available()}")
-print(f"GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'None'}")
-```
-
-## 🎓 Training
-
-### Train the Model
+### Training
 
 ```bash
-python main.py
+# Train with default settings
+python main.py train
+
+# Train with custom parameters
+python main.py train --epochs 30 --batch-size 16
 ```
 
-This will:
-1. Analyze dataset and check for class imbalance
-2. Split data (70% train, 15% val, 15% test)
-3. Apply data augmentation
-4. Train with transfer learning
-5. Fine-tune the model
-6. Evaluate on test set
-7. Generate confusion matrix and metrics
-8. Save best model to `models/best_model.pth`
-
-### Training Features
-
-- **Transfer Learning**: Pre-trained MobileNetV2 backbone
-- **Data Augmentation**: Rotation, flip, brightness, blur, noise
-- **Class Imbalance Handling**: Weighted loss function
-- **Early Stopping**: Prevents overfitting
-- **Fine-Tuning**: Unfreezes backbone layers after initial training
-- **Learning Rate Scheduling**: Cosine annealing
-
-### Expected Training Time
-
-- **With GPU (RTX 4060)**: ~30-45 minutes
-- **With CPU**: ~3-4 hours
-
-## 📊 Evaluation
-
-After training, check results in:
-- `results/confusion_matrix.png` - Visual confusion matrix
-- `results/classification_report.txt` - Per-class metrics
-- `results/test_metrics.json` - Overall metrics
-- `plots/training_history.png` - Training curves
-
-## 🔮 Inference
-
-### Test on Sample Images
+### Testing
 
 ```bash
-python test_inference.py
+# Test on dataset samples
+python main.py test
+
+# Test on specific image
+python test.py --image path/to/image.jpg
+
+# Test multi-image prediction
+python test.py --images img1.jpg img2.jpg img3.jpg
 ```
 
-### Programmatic Inference
+### Deployment
+
+```bash
+# Start API server
+python main.py serve
+
+# Custom port
+python main.py serve --port 8080
+```
+
+Access:
+- **API Documentation**: http://localhost:8000/docs
+- **Web Interface**: http://localhost:8000/frontend
+
+---
+
+## 📖 Usage Examples
+
+### Command Line Interface
+
+```bash
+# Training
+python main.py train              # Train with default settings
+python main.py train --epochs 30  # Custom epochs
+python main.py train --batch-size 16  # Custom batch size
+
+# Testing
+python main.py test               # Test on dataset samples
+python test.py --dataset          # Test on all dataset samples
+python test.py --image buffalo.jpg  # Test single image
+python test.py --images img1.jpg img2.jpg img3.jpg  # Multi-image
+
+# Deployment
+python main.py serve              # Start API server
+python main.py serve --port 8080  # Custom port
+```
+
+### Python API
 
 ```python
+from src.inference import BreedPredictor
 from src.utils import load_config, get_device
-from src.inference import BuffaloBreedPredictor
-import json
 
-# Load config and model
+# Load model
 config = load_config('config.yaml')
 device = get_device()
+predictor = BreedPredictor('models', config, device)
 
-with open('models/class_names.json', 'r') as f:
-    class_names = json.load(f)
+# Single image prediction
+result = predictor.predict_with_decision_support('image.jpg')
+print(f"Breed: {result['final_prediction']}")
+print(f"Confidence: {result['confidence_percent']}")
+print(f"Decision: {result['decision']}")
 
-predictor = BuffaloBreedPredictor(
-    'models/best_model.pth',
-    class_names,
-    config,
-    device
-)
-
-# Predict
-result = predictor.predict_with_threshold(
-    'path/to/image.jpg',
-    confidence_threshold=0.5,
-    top_k=3
-)
-
-print(f"Top Prediction: {result['top_prediction']}")
-print(f"Confidence: {result['top_confidence']:.2%}")
-print(f"All Predictions: {result['predictions']}")
+# Multi-image prediction
+result = predictor.predict_multi(['img1.jpg', 'img2.jpg', 'img3.jpg'])
+print(f"Aggregated Prediction: {result['final_prediction']}")
 ```
 
-## 🌐 API Deployment
-
-### Start API Server
+### REST API
 
 ```bash
-python api.py
-```
+# Single image prediction
+curl -X POST "http://localhost:8000/predict_single" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@buffalo.jpg"
 
-Server runs at: `http://localhost:8000`
+# Multi-image prediction
+curl -X POST "http://localhost:8000/predict_multi" \
+  -F "files=@img1.jpg" \
+  -F "files=@img2.jpg" \
+  -F "aggregation=average"
 
-### API Endpoints
-
-#### 1. Health Check
-```bash
+# Health check
 curl http://localhost:8000/health
-```
 
-#### 2. List Breeds
-```bash
+# List breeds
 curl http://localhost:8000/breeds
 ```
 
-#### 3. Predict Breed
-```bash
-curl -X POST "http://localhost:8000/predict" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@path/to/buffalo_image.jpg"
+---
+
+## 🏗️ Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system architecture.
+
+### Two-Stage Classification Pipeline
+
+```
+Input Image(s)
+    ↓
+Stage 1: Animal Type Detection
+    ├─→ Buffalo → Buffalo Breed Classifier (17 classes)
+    └─→ Cattle → Cattle Breed Classifier (if available)
+    ↓
+Stage 2: Breed Classification
+    ↓
+Decision Support Engine
+    ├─→ ACCEPTED (>70% confidence)
+    ├─→ REVIEW (50-70% confidence)
+    └─→ REJECTED (<50% confidence)
+    ↓
+Final Prediction + Recommendations
 ```
 
-Response:
-```json
-{
-  "success": true,
-  "predictions": [
-    {
-      "rank": 1,
-      "breed": "murrah",
-      "confidence": 0.92,
-      "confidence_percent": "92.00%"
-    },
-    {
-      "rank": 2,
-      "breed": "mehsana",
-      "confidence": 0.05,
-      "confidence_percent": "5.00%"
-    },
-    {
-      "rank": 3,
-      "breed": "surti",
-      "confidence": 0.02,
-      "confidence_percent": "2.00%"
-    }
-  ],
-  "top_prediction": "murrah",
-  "top_confidence": 0.92,
-  "high_confidence": true
-}
+### Model Architecture
+
+- **Backbone**: MobileNetV2 (pretrained on ImageNet)
+- **Binary Classifier**: 2 classes (cattle vs buffalo)
+- **Breed Classifiers**: Separate models for buffalo and cattle breeds
+- **Input Size**: 224x224 RGB
+- **Augmentation**: 15+ production-grade transforms
+
+---
+
+## 📁 Project Structure
+
+```
+breed_recognition/
+├── src/                    # Source code
+│   ├── dataset.py          # Dataset pipeline
+│   ├── model.py            # Model architecture
+│   ├── train.py            # Training logic
+│   ├── inference.py        # Inference + decision support
+│   └── utils.py            # Utilities
+├── api/                    # API module
+│   └── app.py              # FastAPI application
+├── frontend/               # Web interface
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+├── dataset/                # Training data
+│   └── buffalo/            # 17 breeds, 5,564 images
+├── models/                 # Saved models
+├── logs/                   # Training logs
+├── plots/                  # Training plots
+├── results/                # Evaluation results
+├── config.yaml             # Configuration
+├── main.py                 # Unified entry point
+├── test.py                 # Testing script
+├── README.md               # This file
+├── INSTALLATION.md         # Setup guide
+└── ARCHITECTURE.md         # System architecture
 ```
 
-#### 4. Batch Prediction
-```bash
-curl -X POST "http://localhost:8000/predict_batch" \
-  -F "files=@image1.jpg" \
-  -F "files=@image2.jpg"
-```
-
-### API Documentation
-
-Interactive API docs: `http://localhost:8000/docs`
+---
 
 ## ⚙️ Configuration
 
 Edit `config.yaml` to customize:
 
-- **Dataset**: Train/val/test split ratios
-- **Image**: Input size, normalization
-- **Augmentation**: Rotation, brightness, blur parameters
-- **Model**: Architecture (mobilenet_v2, efficientnet_b0, efficientnet_b2)
-- **Training**: Batch size, learning rate, epochs
-- **Deployment**: API host, port, file size limits
+```yaml
+# System mode
+mode: "hybrid"  # Two-stage classification
 
-## 🎯 Production Considerations
+# Training
+training:
+  batch_size: 32
+  num_epochs: 50
+  learning_rate: 0.001
 
-### 1. Data Quality
-- **Issue**: Noisy images, mislabeled data
-- **Solution**: Implement data validation, manual review of low-confidence predictions
+# Model
+model:
+  architecture: "mobilenet_v2"
+  dropout: 0.3
 
-### 2. Class Imbalance
-- **Issue**: Some breeds have fewer images
-- **Solution**: Weighted loss function, data augmentation, collect more data
+# Dataset
+dataset:
+  root_dir: "dataset"
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+```
 
-### 3. Overfitting
-- **Issue**: Model memorizes training data
-- **Solution**: Dropout, early stopping, data augmentation, regularization
+---
 
-### 4. Real-World Deployment
-- **Lighting**: Model trained on diverse lighting conditions
-- **Background**: Augmentation handles various backgrounds
-- **Pose**: Multiple angles in training data
-- **Image Quality**: Handles blur and noise
+## 📊 Performance
 
-### 5. Model Optimization
-- **Size**: MobileNetV2 is lightweight (~14MB)
-- **Speed**: Fast inference (~50ms on GPU, ~200ms on CPU)
-- **Mobile**: Can be converted to TFLite or ONNX for mobile deployment
+### Expected Metrics
+- **Binary Classification**: >95% accuracy
+- **Breed Classification**: 75-90% accuracy (depends on data quality)
+- **Multi-Image Boost**: +5-10% accuracy improvement
 
-## 📈 Performance Metrics
+### Inference Speed (GTX 1650)
+- Single image: ~50-100ms
+- Multi-image (5 images): ~200-400ms
+- Batch (10 images): ~500-800ms
 
-Expected performance (after training):
-- **Accuracy**: 85-95% (depends on data quality)
-- **Precision**: 85-93%
-- **Recall**: 83-92%
-- **F1-Score**: 84-92%
+### Training Time
+- **GTX 1650 (4GB)**: 20-35 minutes (50 epochs)
+- **CPU**: 2-3 hours
 
-## 🔧 Troubleshooting
+---
+
+## 🔧 API Endpoints
+
+### Core Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | API information |
+| `/health` | GET | Health check |
+| `/breeds` | GET | List supported breeds |
+| `/predict_single` | POST | Single image prediction |
+| `/predict_multi` | POST | Multi-image prediction |
+| `/predict_batch` | POST | Batch prediction |
+| `/breed_info/{name}` | GET | Breed information |
+| `/docs` | GET | Interactive API docs |
+| `/frontend` | GET | Web interface |
+
+### Response Format
+
+```json
+{
+  "success": true,
+  "final_prediction": "Murrah",
+  "confidence": 0.87,
+  "confidence_percent": "87.00%",
+  "animal_type": "buffalo",
+  "decision": "ACCEPTED",
+  "decision_message": "High confidence prediction",
+  "recommendation": "Proceed with identification",
+  "top_predictions": [
+    {
+      "rank": 1,
+      "breed": "Murrah",
+      "confidence": 0.87,
+      "confidence_percent": "87.00%"
+    },
+    {
+      "rank": 2,
+      "breed": "Mehsana",
+      "confidence": 0.08,
+      "confidence_percent": "8.00%"
+    },
+    {
+      "rank": 3,
+      "breed": "Surti",
+      "confidence": 0.03,
+      "confidence_percent": "3.00%"
+    }
+  ]
+}
+```
+
+---
+
+## 🎯 Features
+
+### Two-Stage Classification
+1. **Stage 1**: Determines if animal is cattle or buffalo
+2. **Stage 2**: Predicts specific breed based on animal type
+
+### Multi-Image Prediction
+- **Average Aggregation**: Averages probabilities across images
+- **Voting Aggregation**: Majority voting across predictions
+- Improved accuracy with 2-10 images
+
+### Decision Support System
+- **ACCEPTED** (>70% confidence): High confidence, proceed
+- **REVIEW** (50-70% confidence): Manual verification recommended
+- **REJECTED** (<50% confidence): Low confidence, retake images
+
+### Domain Intelligence
+- Breed-specific feature descriptions
+- Regional origin information
+- Physical characteristics database
+- Milk production data (for dairy breeds)
+
+---
+
+## 🐛 Troubleshooting
 
 ### GPU Not Detected
 ```bash
-# Check CUDA installation
 python -c "import torch; print(torch.cuda.is_available())"
-
-# Install CUDA-enabled PyTorch
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 ```
 
-### Out of Memory
-- Reduce `batch_size` in `config.yaml`
-- Use smaller model (mobilenet_v2 instead of efficientnet_b2)
+### CUDA Out of Memory
+```yaml
+# In config.yaml
+training:
+  batch_size: 16  # or 8
+```
 
-### Low Accuracy
-- Check data quality and labels
-- Increase training epochs
-- Adjust learning rate
-- Collect more training data
+### Import Errors
+```bash
+pip install --upgrade -r requirements.txt
+```
 
-## 📝 Future Enhancements
+### Dataset Not Found
+```bash
+# Verify structure
+ls dataset/buffalo/
+# Should show 17 breed folders
+```
 
-1. **Mobile App Integration**: Convert to TFLite/ONNX
-2. **Grad-CAM Visualization**: Show which parts of image influenced prediction
-3. **Multi-Animal Detection**: Detect and classify multiple animals in one image
-4. **Breed Characteristics**: Provide breed information with predictions
-5. **Continuous Learning**: Update model with new data from field workers
+See [INSTALLATION.md](INSTALLATION.md) for more troubleshooting.
 
-## 📄 License
+---
 
-This project is developed for the Bharat Pashudhan App initiative.
+## 🤝 Contributing
 
-## 👥 Support
+Contributions are welcome! Please:
 
-For issues or questions:
-1. Check logs in `logs/training.log`
-2. Review configuration in `config.yaml`
-3. Verify dataset structure matches expected format
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+---
 
 ## 🙏 Acknowledgments
 
 - Dataset: Indian buffalo breed images
+- Model: MobileNetV2 (pretrained on ImageNet)
 - Framework: PyTorch, FastAPI
-- Pre-trained models: ImageNet weights
+- Augmentation: Albumentations
+
+---
+
+## 📧 Contact
+
+For questions or support, please open an issue on GitHub.
+
+---
+
+## 🔗 Links
+
+- **Installation Guide**: [INSTALLATION.md](INSTALLATION.md)
+- **Architecture Details**: [ARCHITECTURE.md](ARCHITECTURE.md)
+- **API Docs**: http://localhost:8000/docs (when server running)
+
+---
+
+**Made with ❤️ for livestock management and breed preservation**

@@ -1,575 +1,661 @@
-# Installation Guide - Bharat Pashudhan App (BPA) Breed Recognition System
+# 📦 Installation Guide
 
-## 🎯 System Overview
-
-Production-grade AI system for cattle and buffalo breed identification with:
-- **Two-stage hybrid classification** (Animal Type → Breed)
-- **Multi-image prediction** with aggregation
-- **Decision support engine** for field workers
-- **Domain intelligence** with breed-specific features
-- **REST API** for integration
-- **Web frontend** for easy access
+Complete setup instructions for the Buffalo Breed Recognition System.
 
 ---
 
-## 📋 Prerequisites
+## 📋 Table of Contents
 
-### System Requirements
-- **OS**: Windows 10/11, Linux, or macOS
-- **RAM**: Minimum 8GB (16GB recommended)
-- **Storage**: 10GB free space
-- **GPU**: NVIDIA GPU with CUDA support (optional but recommended)
-  - RTX 1650 or better
-  - 4GB+ VRAM
-
-### Software Requirements
-- **Python**: 3.10, 3.11, or 3.13
-- **CUDA**: 11.8 or 12.1 (if using GPU)
-- **Git**: For cloning repository
+1. [System Requirements](#system-requirements)
+2. [Installation Steps](#installation-steps)
+3. [Dataset Setup](#dataset-setup)
+4. [Configuration](#configuration)
+5. [Verification](#verification)
+6. [First Run](#first-run)
+7. [Troubleshooting](#troubleshooting)
+8. [Advanced Configuration](#advanced-configuration)
 
 ---
 
-## 🚀 Installation Steps
+## System Requirements
 
-### Step 1: Check Python Version
+### Minimum Requirements
+- **OS**: Windows 10/11, Ubuntu 18.04+, macOS 10.14+
+- **Python**: 3.8 or higher
+- **RAM**: 8 GB
+- **Storage**: 10 GB free space
+- **GPU**: Optional (NVIDIA GPU with CUDA support recommended)
+
+### Recommended Requirements
+- **Python**: 3.10+
+- **RAM**: 16 GB
+- **GPU**: NVIDIA GTX 1650 or better (4GB+ VRAM)
+- **CUDA**: 11.8 or higher
+- **Storage**: 15 GB free space
+
+---
+
+## Installation Steps
+
+### Step 1: Clone Repository
 
 ```bash
-# Windows
-py -0
-
-# Linux/Mac
-python3 --version
+git clone https://github.com/yourusername/buffalo-breed-recognition.git
+cd buffalo-breed-recognition
 ```
 
-**Expected Output:**
-```
--V:3.13  Python 3.13 (64-bit)
--V:3.12  Python 3.12 (64-bit)
--V:3.11  Python 3.11 (64-bit)
--V:3.10  Python 3.10 (64-bit)
-```
+### Step 2: Create Virtual Environment
 
-✅ **Recommended**: Python 3.10, 3.11, or 3.13
-
----
-
-### Step 2: Clone Repository (if applicable)
-
+#### Windows
 ```bash
-git clone <repository-url>
-cd breed_recognition_for_cattle_and_buffaloes
+python -m venv venv
+.\venv\Scripts\activate
 ```
 
----
-
-### Step 3: Create Virtual Environment
-
-#### Windows:
-```bash
-# Using Python 3.13 (or your version)
-py -3.13 -m venv venv
-
-# Activate
-venv\Scripts\activate
-```
-
-#### Linux/Mac:
+#### Linux/Mac
 ```bash
 python3 -m venv venv
-
-# Activate
 source venv/bin/activate
 ```
 
-**Verify activation:**
-```bash
-# You should see (venv) in your prompt
-(venv) C:\...\breed_recognition>
-```
+### Step 3: Install PyTorch
 
----
+#### With CUDA (GPU Support)
 
-### Step 4: Install PyTorch with CUDA Support
-
-#### For GPU (CUDA 11.8):
+**CUDA 11.8**:
 ```bash
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 ```
 
-#### For GPU (CUDA 12.1):
+**CUDA 12.1**:
 ```bash
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 
-#### For CPU Only:
+#### CPU Only
 ```bash
 pip install torch torchvision torchaudio
 ```
 
-**Verify PyTorch installation:**
-```python
+### Step 4: Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 5: Verify Installation
+
+```bash
 python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA Available: {torch.cuda.is_available()}')"
 ```
 
-**Expected Output:**
+**Expected output**:
 ```
-PyTorch: 2.7.1+cu118
+PyTorch: 2.0.0+cu118
 CUDA Available: True
 ```
 
 ---
 
-### Step 5: Install Dependencies
+## Dataset Setup
+
+### Option 1: Use Existing Dataset
+
+If you have the dataset:
 
 ```bash
-pip install -r requirements.txt
-```
-
-**This installs:**
-- OpenCV (image processing)
-- Albumentations (augmentation)
-- scikit-learn (ML utilities)
-- FastAPI & Uvicorn (API server)
-- Matplotlib & Seaborn (visualization)
-- Pandas (data handling)
-- Grad-CAM (explainability)
-- And more...
-
----
-
-### Step 6: Verify Installation
-
-Run the setup verification script:
-
-```bash
-python setup.py
-```
-
-**Expected Output:**
-```
-============================================================
-Buffalo Breed Recognition - Setup Verification
-============================================================
-
-1. Checking Python version...
-Python Version: 3.13.7
-✓ Python version compatible
-
-2. Checking GPU availability...
-✓ GPU Available: NVIDIA GeForce GTX 1650
-  CUDA Version: 11.8
-  Memory: 4.29 GB
-
-3. Checking dataset...
-✓ Dataset found: 17 breeds
-  Total images: 2785
-
-4. Creating directories...
-✓ Created directories: models, results, plots, logs
-
-============================================================
-Setup Verification Complete
-============================================================
-
-✓ System ready for training!
-```
-
----
-
-## 📁 Dataset Structure
-
-### For Hybrid Classification (Cattle + Buffalo):
-
-```
+# Ensure dataset structure:
 dataset/
-├── buffalo/
-│   ├── Murrah/
-│   │   ├── image1.jpg
-│   │   ├── image2.jpg
-│   │   └── ...
-│   ├── Mehsana/
-│   ├── Jaffarabadi/
-│   ├── Surti/
-│   ├── Banni/
-│   └── ... (other buffalo breeds)
-│
-└── cattle/
-    ├── Gir/
-    │   ├── image1.jpg
-    │   ├── image2.jpg
-    │   └── ...
-    ├── Sahiwal/
-    ├── Red_Sindhi/
-    ├── Tharparkar/
-    └── ... (other cattle breeds)
+└── buffalo/
+    ├── banni/
+    ├── bargur/
+    ├── bhadwari/
+    └── ... (17 breeds total)
 ```
 
-### For Buffalo-Only (Legacy):
-
-```
-buffalo/
-├── Murrah/
-├── Mehsana/
-├── Jaffarabadi/
-└── ... (buffalo breeds)
-```
-
-**Supported Image Formats:**
-- `.jpg`, `.jpeg`, `.png`, `.JPG`, `.JPEG`
-
-**Image Requirements:**
-- Minimum resolution: 224x224 pixels
-- Clear visibility of animal
-- Good lighting (augmentation handles variations)
-- Multiple angles recommended
-
----
-
-## 🎓 Training the Model
-
-### Option 1: Single Mode (Buffalo Only)
+### Option 2: Download Dataset
 
 ```bash
-python main.py
+# Download from your source
+# Extract to dataset/ folder
+# Verify structure matches above
 ```
 
-**Configuration** (`config.yaml`):
-```yaml
-dataset:
-  root_dir: "buffalo"  # Buffalo-only dataset
-```
-
-### Option 2: Hybrid Mode (Cattle + Buffalo)
-
-**Update `config.yaml`:**
-```yaml
-dataset:
-  root_dir: "dataset"  # Hybrid dataset
-  mode: "hybrid"       # Enable hybrid mode
-```
-
-**Run training:**
-```bash
-python main_hybrid.py  # Use hybrid training script
-```
-
-### Training Output:
-
-```
-============================================================
-Starting Training
-============================================================
-
-Epoch 1/50
-Training: 100%|████████████| 87/87 [02:15<00:00]
-Validation: 100%|████████████| 19/19 [00:25<00:00]
-
-Train Loss: 2.1234, Train Acc: 0.4521
-Val Loss: 1.8765, Val Acc: 0.5234
-✓ Best model saved! Val Acc: 0.5234
-
-...
-
-Epoch 50/50
-Train Loss: 0.2134, Train Acc: 0.9421
-Val Loss: 0.3456, Val Acc: 0.8934
-
-============================================================
-Training Complete! Best Val Acc: 0.9234
-============================================================
-```
-
-**Training Time:**
-- **With GPU**: 30-45 minutes
-- **With CPU**: 3-4 hours
-
----
-
-## 🔮 Testing Inference
-
-### Test on Sample Images:
+### Verify Dataset
 
 ```bash
-python test_inference.py
+python -c "from pathlib import Path; breeds = [d.name for d in Path('dataset/buffalo').iterdir() if d.is_dir()]; print(f'Breeds found: {len(breeds)}'); print(breeds)"
 ```
 
-### Programmatic Usage:
-
-```python
-from src.utils import load_config, get_device
-from src.inference import HybridBreedPredictor
-import json
-
-# Load configuration
-config = load_config('config.yaml')
-device = get_device()
-
-# Load class names
-with open('models/class_names.json', 'r') as f:
-    class_names = json.load(f)
-
-# Initialize predictor
-predictor = HybridBreedPredictor(
-    model_path='models/best_model.pth',
-    class_names=class_names,
-    config=config,
-    device=device,
-    animal_type='buffalo'
-)
-
-# Single image prediction
-result = predictor.predict_with_decision_support('path/to/image.jpg')
-print(f"Prediction: {result['final_prediction']}")
-print(f"Confidence: {result['confidence_percent']}")
-print(f"Decision: {result['decision']}")
-
-# Multi-image prediction (aggregated)
-result = predictor.predict_multi(
-    ['image1.jpg', 'image2.jpg', 'image3.jpg'],
-    aggregation='average'
-)
-print(f"Final Prediction: {result['final_prediction']}")
-print(f"Confidence: {result['confidence_percent']}")
-print(f"Decision: {result['decision']}")
+**Expected output**:
+```
+Breeds found: 17
+['banni', 'bargur', 'bhadwari', 'chhattisgarhi', 'chilika', 'gojri', 'jaffarabadi', 'kalahandi', 'luit', 'marathwada', 'mehsana', 'murrah', 'nagpuri', 'nili-ravi', 'pandharpuri', 'surti', 'toda']
 ```
 
 ---
 
-## 🌐 Starting the API Server
+## Configuration
 
-### Basic API:
+### Review Configuration
 
-```bash
-python api.py
-```
-
-**Server runs at:** `http://localhost:8000`
-
-### Hybrid API (Cattle + Buffalo):
-
-```bash
-python api_hybrid.py
-```
-
-### API Endpoints:
-
-1. **Health Check**
-   ```bash
-   curl http://localhost:8000/health
-   ```
-
-2. **List Breeds**
-   ```bash
-   curl http://localhost:8000/breeds
-   ```
-
-3. **Single Image Prediction**
-   ```bash
-   curl -X POST "http://localhost:8000/predict_single" \
-     -F "file=@path/to/image.jpg"
-   ```
-
-4. **Multi-Image Prediction**
-   ```bash
-   curl -X POST "http://localhost:8000/predict_multi" \
-     -F "files=@image1.jpg" \
-     -F "files=@image2.jpg" \
-     -F "files=@image3.jpg"
-   ```
-
-5. **Interactive Documentation**
-   - Open browser: `http://localhost:8000/docs`
-
----
-
-## 🖥️ Web Frontend
-
-### Start Frontend Server:
-
-```bash
-python -m http.server 8080 --directory frontend
-```
-
-**Access at:** `http://localhost:8080`
-
-### Features:
-- Upload single or multiple images
-- Real-time breed prediction
-- Decision support visualization
-- Breed information display
-- Confidence meter
-- Download results as JSON
-
----
-
-## 🔧 Configuration
-
-### Edit `config.yaml`:
+Edit `config.yaml` if needed:
 
 ```yaml
-# Dataset Configuration
+# System mode
+mode: "hybrid"  # Two-stage classification
+
+# Dataset
 dataset:
-  root_dir: "dataset"  # or "buffalo" for single mode
+  root_dir: "dataset"  # Change if dataset is elsewhere
   train_split: 0.7
   val_split: 0.15
   test_split: 0.15
-  random_seed: 42
 
-# Model Configuration
-model:
-  architecture: "mobilenet_v2"  # or efficientnet_b0, efficientnet_b2
-  pretrained: true
-  dropout: 0.3
-
-# Training Configuration
+# Training
 training:
-  batch_size: 32
-  num_epochs: 50
+  batch_size: 32       # Reduce to 16 or 8 if GPU memory issues
+  num_epochs: 50       # Adjust based on time available
   learning_rate: 0.001
-  use_weighted_loss: true
 
-# Deployment Configuration
-deployment:
-  api_host: "0.0.0.0"
-  api_port: 8000
-  max_image_size: 10485760  # 10MB
+# Model
+model:
+  architecture: "mobilenet_v2"  # Options: mobilenet_v2, efficientnet_b0
+  dropout: 0.3
+```
+
+### GPU Memory Settings
+
+If you encounter CUDA out of memory errors:
+
+```yaml
+training:
+  batch_size: 16  # or 8 for 4GB GPUs
 ```
 
 ---
 
-## 🐛 Troubleshooting
+## Verification
 
-### Issue 1: GPU Not Detected
+### Test Imports
 
-**Check CUDA:**
 ```bash
-python -c "import torch; print(torch.cuda.is_available())"
+python -c "from src.dataset import *; from src.model import *; from src.train import *; from src.inference import *; print('✓ All imports successful')"
 ```
 
-**Solution:**
-- Install CUDA toolkit from NVIDIA
-- Reinstall PyTorch with correct CUDA version
-- Check GPU drivers
+### Test Configuration
 
-### Issue 2: Out of Memory
+```bash
+python -c "from src.utils import load_config; config = load_config('config.yaml'); print('✓ Configuration loaded')"
+```
 
-**Solution:**
-- Reduce `batch_size` in `config.yaml` (try 16 or 8)
-- Use smaller model: `mobilenet_v2` instead of `efficientnet_b2`
-- Close other GPU applications
+### Test GPU
 
-### Issue 3: Module Not Found
+```bash
+python -c "from src.utils import get_device; device = get_device(); print(f'Device: {device}')"
+```
 
-**Solution:**
+**Expected output**:
+```
+Device: cuda
+```
+
+Or if no GPU:
+```
+Device: cpu
+```
+
+---
+
+## First Run
+
+### 1. Train Model
+
+```bash
+python main.py train
+```
+
+**What it does**:
+- Loads and prepares dataset
+- Creates model architecture
+- Trains for specified epochs
+- Saves best model to `models/`
+- Generates training plots in `plots/`
+
+**Duration**: 20-35 minutes on GTX 1650
+
+**Expected output**:
+```
+============================================================
+Buffalo Breed Recognition - Training
+============================================================
+Device: cuda
+Epochs: 50
+Batch Size: 32
+
+Step 1: Preparing hybrid datasets...
+Dataset structure detected:
+  Buffalo: dataset\buffalo
+  Cattle: Not found
+
+============================================================
+Preparing Buffalo Breed Classification Dataset
+============================================================
+
+Dataset Analysis:
+  Total Classes: 17
+  Total Images: 5564
+  Imbalance Ratio: 5.33
+
+Data Split:
+  Train: 3833 images
+  Val: 822 images
+  Test: 822 images
+
+Step 2: Creating hybrid classification system...
+✓ Buffalo breed classifier created: mobilenet_v2
+  Num classes: 17
+
+Step 3: Training hybrid system...
+Training buffalo breed classifier...
+Epoch 1/50: [Progress bar...]
+
+[Training continues...]
+
+HYBRID TRAINING PIPELINE COMPLETE!
+Models saved to: models
+```
+
+### 2. Test Model
+
+```bash
+python main.py test
+```
+
+**What it does**:
+- Loads trained model
+- Tests on sample images
+- Displays predictions
+
+**Expected output**:
+```
+============================================================
+Buffalo Breed Recognition - Testing
+============================================================
+Device: cuda
+✓ Model loaded
+  Buffalo breeds: 17
+
+Testing on sample from: banni
+
+Image: banni_001.jpg
+Animal Type: BUFFALO
+Prediction: Banni
+Confidence: 87.45%
+Decision: ACCEPTED
+
+Top 3 Predictions:
+  #1: Banni - 87.45%
+  #2: Murrah - 8.32%
+  #3: Mehsana - 2.15%
+
+============================================================
+Testing Complete!
+============================================================
+```
+
+### 3. Start API
+
+```bash
+python main.py serve
+```
+
+**What it does**:
+- Starts FastAPI server
+- Loads trained model
+- Serves REST API and web interface
+
+**Expected output**:
+```
+============================================================
+Buffalo Breed Recognition - API Server
+============================================================
+Host: 0.0.0.0
+Port: 8000
+Docs: http://localhost:8000/docs
+Frontend: http://localhost:8000/frontend
+============================================================
+INFO:     Started server process
+INFO:     Waiting for application startup.
+✓ Model loaded successfully
+  Device: cuda
+  Mode: Two-stage (Animal Type → Breed)
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000
+```
+
+**Access**:
+- API Docs: http://localhost:8000/docs
+- Web Interface: http://localhost:8000/frontend
+
+---
+
+## Troubleshooting
+
+### Issue: CUDA Out of Memory
+
+**Symptoms**:
+```
+RuntimeError: CUDA out of memory
+```
+
+**Solution**:
+```yaml
+# In config.yaml
+training:
+  batch_size: 8  # Reduce batch size
+```
+
+Or use CPU:
+```yaml
+inference:
+  device: "cpu"
+```
+
+### Issue: Import Errors
+
+**Symptoms**:
+```
+ModuleNotFoundError: No module named 'torch'
+```
+
+**Solution**:
 ```bash
 # Ensure virtual environment is activated
-pip install -r requirements.txt
+# Windows
+.\venv\Scripts\activate
 
-# Or install specific package
-pip install <package-name>
+# Linux/Mac
+source venv/bin/activate
+
+# Reinstall dependencies
+pip install --upgrade -r requirements.txt
 ```
 
-### Issue 4: Low Accuracy
+### Issue: Dataset Not Found
 
-**Solutions:**
-- Check data quality and labels
-- Increase training epochs (50 → 100)
-- Use data augmentation (already enabled)
-- Collect more training data
-- Try different model architecture
-
-### Issue 5: API Not Starting
-
-**Solution:**
-```bash
-# Check if port is in use
-netstat -ano | findstr :8000  # Windows
-lsof -i :8000  # Linux/Mac
-
-# Use different port
-uvicorn api:app --host 0.0.0.0 --port 8001
+**Symptoms**:
+```
+FileNotFoundError: dataset/buffalo not found
 ```
 
----
-
-## 📊 Expected Performance
-
-After training, you should achieve:
-
-| Metric | Expected Range |
-|--------|----------------|
-| Accuracy | 85-95% |
-| Precision | 85-93% |
-| Recall | 83-92% |
-| F1-Score | 84-92% |
-| Inference Time (GPU) | 50-100ms |
-| Inference Time (CPU) | 200-500ms |
-| Model Size | ~14MB |
-
----
-
-## 🚀 Quick Start Commands
-
+**Solution**:
 ```bash
-# 1. Setup
-py -3.13 -m venv venv
-venv\Scripts\activate
+# Verify dataset structure
+ls dataset/buffalo/
+
+# Should show 17 breed folders
+# If not, check dataset path in config.yaml
+```
+
+### Issue: Slow Training
+
+**Symptoms**:
+- Training takes hours
+- GPU not being used
+
+**Solution**:
+```bash
+# Check if GPU is detected
+python -c "import torch; print(torch.cuda.is_available())"
+
+# If False, reinstall PyTorch with CUDA
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
-pip install -r requirements.txt
+```
 
-# 2. Verify
-python setup.py
+Or reduce epochs:
+```yaml
+# In config.yaml
+training:
+  num_epochs: 30  # Reduce from 50
+```
 
-# 3. Train
-python main.py
+### Issue: Module Not Found
 
-# 4. Test
-python test_inference.py
+**Symptoms**:
+```
+ModuleNotFoundError: No module named 'src'
+```
 
-# 5. Start API
-python api.py
+**Solution**:
+```bash
+# Ensure you're in project root directory
+pwd  # Should show: .../buffalo-breed-recognition
 
-# 6. Start Frontend
-python -m http.server 8080 --directory frontend
+# Verify Python path
+python -c "import sys; print(sys.path)"
+```
+
+### Issue: Permission Denied
+
+**Symptoms**:
+```
+PermissionError: [Errno 13] Permission denied
+```
+
+**Solution**:
+```bash
+# Windows: Run as administrator
+# Linux/Mac: Use sudo or fix permissions
+chmod -R 755 dataset/
+```
+
+### Issue: API Won't Start
+
+**Symptoms**:
+```
+Address already in use
+```
+
+**Solution**:
+```bash
+# Use different port
+python main.py serve --port 8080
+
+# Or kill process using port 8000
+# Windows
+netstat -ano | findstr :8000
+taskkill /PID <PID> /F
+
+# Linux/Mac
+lsof -ti:8000 | xargs kill -9
 ```
 
 ---
 
-## 📞 Support
+## Advanced Configuration
 
-For issues:
-1. Check logs: `logs/training.log`
-2. Review configuration: `config.yaml`
-3. Verify dataset structure
-4. Check GPU availability
-5. Review error messages
+### Custom Dataset Location
+
+```yaml
+# config.yaml
+dataset:
+  root_dir: "/path/to/your/dataset"
+```
+
+### Custom Model Save Location
+
+```yaml
+# config.yaml
+output:
+  model_dir: "/path/to/save/models"
+  plots_dir: "/path/to/save/plots"
+  results_dir: "/path/to/save/results"
+```
+
+### Enable TensorBoard
+
+```yaml
+# config.yaml
+logging:
+  tensorboard: true
+```
+
+Then run:
+```bash
+tensorboard --logdir logs/
+```
+
+Access: http://localhost:6006
+
+### Multi-GPU Training
+
+```yaml
+# config.yaml
+training:
+  use_multi_gpu: true
+  gpu_ids: [0, 1]  # Use GPUs 0 and 1
+```
+
+### Custom Augmentation
+
+```yaml
+# config.yaml
+augmentation:
+  train:
+    horizontal_flip: 0.5
+    rotation_limit: 20  # Increase rotation
+    brightness_contrast: 0.3  # Increase brightness variation
+    blur_limit: 5  # Increase blur
+```
 
 ---
 
-## 📚 Additional Resources
+## System Check Script
 
-- **Documentation**: See `README.md`
-- **Quick Start**: See `QUICKSTART.md`
-- **Dataset Upgrade**: See `DATASET_UPGRADE_SUMMARY.md`
-- **API Documentation**: `http://localhost:8000/docs` (when server is running)
+Create `check_system.py`:
+
+```python
+import torch
+from pathlib import Path
+from src.utils import load_config, get_device
+
+print("="*60)
+print("System Check")
+print("="*60)
+
+# Python version
+import sys
+print(f"Python: {sys.version.split()[0]}")
+
+# PyTorch
+print(f"PyTorch: {torch.__version__}")
+print(f"CUDA Available: {torch.cuda.is_available()}")
+if torch.cuda.is_available():
+    print(f"CUDA Version: {torch.version.cuda}")
+    print(f"GPU: {torch.cuda.get_device_name(0)}")
+    print(f"GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB")
+
+# Config
+try:
+    config = load_config('config.yaml')
+    print(f"Config Loaded: ✓")
+except Exception as e:
+    print(f"Config Loaded: ✗ ({e})")
+
+# Dataset
+dataset_path = Path('dataset/buffalo')
+if dataset_path.exists():
+    breeds = [d.name for d in dataset_path.iterdir() if d.is_dir()]
+    print(f"Dataset Found: ✓")
+    print(f"Breeds: {len(breeds)}")
+else:
+    print(f"Dataset Found: ✗")
+
+# Device
+device = get_device()
+print(f"Device: {device}")
+
+print("="*60)
+print("System check complete!")
+print("="*60)
+```
+
+Run:
+```bash
+python check_system.py
+```
 
 ---
 
-## ✅ Installation Checklist
+## Installation Checklist
 
-- [ ] Python 3.10/3.11/3.13 installed
+- [ ] Python 3.8+ installed
 - [ ] Virtual environment created and activated
-- [ ] PyTorch with CUDA installed
-- [ ] All dependencies installed
-- [ ] Dataset structure verified
-- [ ] Setup verification passed
-- [ ] GPU detected (if available)
-- [ ] Model training completed
-- [ ] API server tested
-- [ ] Frontend accessible
+- [ ] PyTorch installed (with CUDA if GPU available)
+- [ ] Dependencies installed from requirements.txt
+- [ ] Dataset downloaded and structured correctly
+- [ ] Configuration reviewed and customized
+- [ ] System check passed
+- [ ] First training run successful
+- [ ] API server starts without errors
+- [ ] Web interface accessible
 
 ---
 
-**System Status**: ✅ READY FOR PRODUCTION
+## Quick Commands Reference
 
-**Last Updated**: 2026-04-01
+```bash
+# Environment
+.\venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac
+
+# Training
+python main.py train
+python main.py train --epochs 30
+python main.py train --batch-size 16
+
+# Testing
+python main.py test
+python test.py --dataset
+python test.py --image buffalo.jpg
+
+# Deployment
+python main.py serve
+python main.py serve --port 8080
+
+# Verification
+python -c "import torch; print(torch.cuda.is_available())"
+python check_system.py
+```
+
+---
+
+## Next Steps
+
+After successful installation:
+
+1. **Train your first model**: `python main.py train`
+2. **Test predictions**: `python main.py test`
+3. **Explore API**: `python main.py serve`
+4. **Read documentation**: [README.md](README.md)
+5. **Understand architecture**: [ARCHITECTURE.md](ARCHITECTURE.md)
+
+---
+
+## Getting Help
+
+### Documentation
+- [README.md](README.md) - Project overview
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Technical details
+- [GitHub Issues](https://github.com/yourusername/buffalo-breed-recognition/issues) - Report bugs
+
+### Common Issues
+- Check logs in `logs/training.log`
+- Review configuration in `config.yaml`
+- Verify dataset structure
+- Ensure GPU is detected (if using)
+
+---
+
+**Installation complete! You're ready to start recognizing buffalo breeds! 🐃**
