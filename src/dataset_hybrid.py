@@ -91,7 +91,7 @@ class HybridDatasetManager:
         )
 
         # Create datasets
-        train_transform = get_transforms(self.config, 'train', enhanced=True)
+        train_transform = get_transforms(self.config, 'train')
         val_transform = get_transforms(self.config, 'val')
 
         train_dataset = BuffaloBreedDataset(
@@ -185,7 +185,7 @@ class HybridDatasetManager:
         logger.info(f"  Test: {len(X_test)} images")
 
         # Create datasets with enhanced augmentation
-        train_transform = get_transforms(self.config, 'train', enhanced=True)
+        train_transform = get_transforms(self.config, 'train')
         val_transform = get_transforms(self.config, 'val')
 
         train_dataset = BuffaloBreedDataset(
