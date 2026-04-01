@@ -1,143 +1,391 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bharat Pashudhan App - Breed Recognition</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-Powered Buffalo Breed Recognition System for Government Field Workers">
+  <title>Bharat Pashudhan | AI Breed Recognition</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Tiro+Devanagari+Hindi&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
+  <!-- NOISE TEXTURE OVERLAY -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- AMBIENT GLOW ORBS -->
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+  <div class="orb orb-3" aria-hidden="true"></div>
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <i class="fas fa-moon" id="themeIcon"></i>
+  </button>
+
+  <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+  <header class="header" id="header">
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <h1>🐃 Bharat Pashudhan App</h1>
-                <p>AI-Powered Breed Recognition System</p>
-            </div>
-            <div class="status" id="status">
-                <span class="status-indicator" id="statusIndicator">●</span>
-                <span id="statusText">Checking...</span>
-            </div>
-        </header>
+      <div class="header-content">
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Upload Section -->
-            <section class="upload-section">
-                <h2>Upload Animal Images</h2>
-                <p class="subtitle">Upload one or multiple images for accurate breed identification</p>
+        <div class="logo-section">
+          <div class="logo-mark">
+            <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="28" cy="28" r="28" fill="url(#lg1)"/>
+              <circle cx="28" cy="28" r="18" fill="url(#lg2)" opacity="0.9"/>
+              <circle cx="28" cy="28" r="9" fill="white" opacity="0.95"/>
+              <defs>
+                <linearGradient id="lg1" x1="0" y1="0" x2="56" y2="56">
+                  <stop offset="0%" stop-color="#FF6B35"/>
+                  <stop offset="100%" stop-color="#C8371A"/>
+                </linearGradient>
+                <linearGradient id="lg2" x1="0" y1="0" x2="56" y2="56">
+                  <stop offset="0%" stop-color="#FFB347"/>
+                  <stop offset="100%" stop-color="#FF6B35"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <span class="logo-deva">भारत पशुधन</span>
+            <span class="logo-eng">Bharat Pashudhan</span>
+            <span class="logo-sub">AI Breed Recognition</span>
+          </div>
+        </div>
 
-                <div class="upload-modes">
-                    <button class="mode-btn active" onclick="setMode('single')" id="singleModeBtn">
-                        📷 Single Image
-                    </button>
-                    <button class="mode-btn" onclick="setMode('multi')" id="multiModeBtn">
-                        📸 Multiple Images
-                    </button>
-                </div>
+        <div class="header-right">
+          <div class="api-pill" id="apiStatus">
+            <span class="api-dot"></span>
+            <span class="api-label">Connecting...</span>
+          </div>
+          <div class="scan-counter">
+            <i class="fas fa-check-circle"></i>
+            <span id="totalScans">0</span>
+            <span class="scan-label">Scans</span>
+          </div>
+        </div>
 
-                <div class="upload-area" id="uploadArea">
-                    <input type="file" id="fileInput" accept="image/*" multiple hidden>
-                    <div class="upload-content" onclick="document.getElementById('fileInput').click()">
-                        <div class="upload-icon">📁</div>
-                        <p class="upload-text">Click to upload or drag and drop</p>
-                        <p class="upload-hint">Supported: JPG, JPEG, PNG (Max 10MB per image)</p>
-                    </div>
-                </div>
-
-                <div class="preview-container" id="previewContainer"></div>
-
-                <div class="action-buttons" id="actionButtons" style="display: none;">
-                    <button class="btn btn-primary" onclick="predictImages()" id="predictBtn">
-                        🔍 Identify Breed
-                    </button>
-                    <button class="btn btn-secondary" onclick="clearImages()">
-                        🗑️ Clear All
-                    </button>
-                </div>
-
-                <div class="aggregation-options" id="aggregationOptions" style="display: none;">
-                    <label>Aggregation Method:</label>
-                    <select id="aggregationMethod">
-                        <option value="average">Average Probability</option>
-                        <option value="voting">Majority Voting</option>
-                    </select>
-                </div>
-            </section>
-
-            <!-- Results Section -->
-            <section class="results-section" id="resultsSection" style="display: none;">
-                <h2>Identification Results</h2>
-
-                <!-- Final Prediction -->
-                <div class="final-prediction" id="finalPrediction">
-                    <div class="prediction-header">
-                        <h3>Final Prediction</h3>
-                        <span class="decision-badge" id="decisionBadge">ACCEPTED</span>
-                    </div>
-                    <div class="prediction-content">
-                        <div class="breed-name" id="breedName">Murrah</div>
-                        <div class="confidence-meter">
-                            <div class="confidence-bar" id="confidenceBar"></div>
-                            <span class="confidence-text" id="confidenceText">92%</span>
-                        </div>
-                        <div class="animal-type" id="animalType">Buffalo</div>
-                    </div>
-                </div>
-
-                <!-- Decision Support -->
-                <div class="decision-support" id="decisionSupport">
-                    <h4>📋 Decision Support</h4>
-                    <div class="decision-message" id="decisionMessage"></div>
-                    <div class="recommendation" id="recommendation"></div>
-                </div>
-
-                <!-- Reasoning -->
-                <div class="reasoning-section" id="reasoningSection">
-                    <h4>🔍 Identification Reasoning</h4>
-                    <p id="reasoning"></p>
-                </div>
-
-                <!-- Top Predictions -->
-                <div class="top-predictions" id="topPredictions">
-                    <h4>📊 Top Predictions</h4>
-                    <div class="predictions-list" id="predictionsList"></div>
-                </div>
-
-                <!-- Breed Information -->
-                <div class="breed-info" id="breedInfo" style="display: none;">
-                    <h4>📖 Breed Information</h4>
-                    <div class="info-grid" id="infoGrid"></div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="result-actions">
-                    <button class="btn btn-primary" onclick="downloadResults()">
-                        💾 Download Results (JSON)
-                    </button>
-                    <button class="btn btn-secondary" onclick="resetApp()">
-                        🔄 New Prediction
-                    </button>
-                </div>
-            </section>
-
-            <!-- Loading Overlay -->
-            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-                <div class="spinner"></div>
-                <p>Analyzing images...</p>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>© 2026 Bharat Pashudhan App | AI-Powered Breed Recognition</p>
-            <p>Developed for field workers and veterinary professionals</p>
-        </footer>
+      </div>
     </div>
+  </header>
 
-    <script src="script.js"></script>
+  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+
+        <div class="hero-badge">
+          <i class="fas fa-shield-alt"></i>
+          <span>Government of India Initiative</span>
+        </div>
+
+        <h1 class="hero-title">
+          AI-Powered<br>
+          <span class="title-highlight">Livestock Breed</span><br>
+          Identification
+        </h1>
+
+        <p class="hero-desc">
+          Advanced deep learning technology for instant buffalo breed recognition.
+          Trusted by veterinary professionals and field workers across India.
+        </p>
+
+        <div class="hero-chips">
+          <div class="chip">
+            <i class="fas fa-bolt"></i>
+            <span>Instant Results</span>
+          </div>
+          <div class="chip">
+            <i class="fas fa-dna"></i>
+            <span>17 Breeds</span>
+          </div>
+          <div class="chip">
+            <i class="fas fa-chart-line"></i>
+            <span>95% Accuracy</span>
+          </div>
+          <div class="chip">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Multi-Image</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- decorative grid lines -->
+    <div class="hero-grid" aria-hidden="true"></div>
+  </section>
+
+  <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+  <main class="main" id="main">
+    <div class="container">
+
+      <!-- MODE SELECTOR -->
+      <div class="mode-selector" role="tablist" aria-label="Upload mode">
+        <button class="mode-btn active" id="singleModeBtn" data-mode="single" role="tab" aria-selected="true">
+          <div class="mode-icon"><i class="fas fa-image"></i></div>
+          <div class="mode-text">
+            <span>Single Image</span>
+            <small>Best for quick scans</small>
+          </div>
+          <div class="mode-indicator"></div>
+        </button>
+        <button class="mode-btn" id="multipleModeBtn" data-mode="multiple" role="tab" aria-selected="false">
+          <div class="mode-icon"><i class="fas fa-layer-group"></i></div>
+          <div class="mode-text">
+            <span>Multiple Images</span>
+            <small>Higher accuracy</small>
+          </div>
+          <div class="mode-indicator"></div>
+        </button>
+      </div>
+
+      <!-- ─── UPLOAD SECTION ─── -->
+      <section class="panel upload-panel" id="uploadSection" aria-label="Upload images">
+
+        <!-- DROPZONE -->
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Drop zone for image upload">
+          <div class="dz-bg-pattern" aria-hidden="true"></div>
+          <div class="dz-inner">
+            <div class="dz-icon-wrap">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3 class="dz-title">Drop Images Here</h3>
+            <p class="dz-text">or click to browse from your device</p>
+            <button class="btn btn-upload" id="browseBtn" type="button">
+              <i class="fas fa-folder-open"></i>
+              <span>Browse Files</span>
+            </button>
+            <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png" hidden>
+            <p class="dz-hint">
+              <i class="fas fa-info-circle"></i>
+              JPG, JPEG, PNG · Max 10MB per image
+            </p>
+          </div>
+        </div>
+
+        <!-- PREVIEW SECTION -->
+        <div class="preview-wrap" id="previewSection" style="display:none;" aria-live="polite">
+          <div class="preview-header">
+            <h3 class="preview-title">
+              <i class="fas fa-images"></i>
+              Selected Images
+              <span class="preview-count" id="imageCount">0</span>
+            </h3>
+            <button class="btn btn-ghost-danger" id="clearAllBtn" type="button">
+              <i class="fas fa-trash-alt"></i>
+              Clear All
+            </button>
+          </div>
+
+          <div class="preview-grid" id="previewGrid"></div>
+
+          <!-- AGGREGATION (multi-mode only) -->
+          <div class="agg-selector" id="aggregationSelector" style="display:none;" role="group" aria-label="Aggregation method">
+            <p class="agg-label">
+              <i class="fas fa-sliders-h"></i>
+              Aggregation Method
+            </p>
+            <div class="agg-options">
+              <label class="agg-option">
+                <input type="radio" name="aggregation" value="average" checked>
+                <span class="agg-radio"></span>
+                <div class="agg-info">
+                  <strong>Average</strong>
+                  <small>Combines all probabilities</small>
+                </div>
+              </label>
+              <label class="agg-option">
+                <input type="radio" name="aggregation" value="voting">
+                <span class="agg-radio"></span>
+                <div class="agg-info">
+                  <strong>Voting</strong>
+                  <small>Majority consensus</small>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- ANALYZE BUTTON -->
+          <button class="btn btn-analyze" id="analyzeBtn" type="button">
+            <i class="fas fa-brain"></i>
+            <span>Analyze Images</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ─── LOADING SECTION ─── -->
+      <section class="panel loading-panel" id="loadingSection" style="display:none;" aria-label="Loading" aria-live="polite">
+        <div class="loading-inner">
+          <div class="loading-visual">
+            <div class="load-ring load-ring-outer"></div>
+            <div class="load-ring load-ring-mid"></div>
+            <div class="load-ring load-ring-inner"></div>
+            <div class="load-core"><i class="fas fa-brain"></i></div>
+          </div>
+          <h3 class="loading-title">Analyzing Images...</h3>
+          <p class="loading-sub">Deep learning model is processing your upload</p>
+          <div class="load-steps">
+            <div class="load-step active" id="step1">
+              <div class="step-dot"><i class="fas fa-check"></i></div>
+              <span>Image preprocessing</span>
+            </div>
+            <div class="load-step" id="step2">
+              <div class="step-dot"><i class="fas fa-circle-notch fa-spin"></i></div>
+              <span>Feature extraction</span>
+            </div>
+            <div class="load-step" id="step3">
+              <div class="step-dot"><i class="fas fa-circle"></i></div>
+              <span>Breed classification</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── RESULTS SECTION ─── -->
+      <section class="results-section" id="resultsSection" style="display:none;" aria-label="Analysis results" aria-live="polite">
+
+        <div class="results-header">
+          <h2 class="results-title">
+            <i class="fas fa-chart-bar"></i>
+            Analysis Results
+          </h2>
+          <button class="btn btn-new-scan" id="newScanBtn" type="button">
+            <i class="fas fa-plus"></i>
+            New Scan
+          </button>
+        </div>
+
+        <!-- Animal Type -->
+        <div class="result-card card-animal stagger-1">
+          <div class="card-head">
+            <h3><i class="fas fa-paw"></i> Animal Type</h3>
+          </div>
+          <div class="card-body">
+            <div class="animal-badge" id="animalTypeBadge">
+              <i class="fas fa-hippo"></i>
+              <span id="animalTypeText">Buffalo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decision -->
+        <div class="result-card card-decision stagger-2">
+          <div class="card-head">
+            <h3><i class="fas fa-clipboard-check"></i> Decision Support</h3>
+          </div>
+          <div class="card-body">
+            <div class="decision-badge" id="decisionBadge">
+              <i class="fas fa-check-circle"></i>
+              <span id="decisionText">ACCEPTED</span>
+            </div>
+            <p class="decision-msg" id="decisionMessage"></p>
+            <div class="recommendation-box">
+              <i class="fas fa-lightbulb"></i>
+              <p id="recommendationText"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Predictions -->
+        <div class="result-card card-predictions stagger-3">
+          <div class="card-head">
+            <h3><i class="fas fa-trophy"></i> Top Predictions</h3>
+            <span class="top-conf-badge" id="topConfidenceBadge">—</span>
+          </div>
+          <div class="card-body">
+            <div class="predictions-list" id="predictionsList"></div>
+          </div>
+        </div>
+
+        <!-- Breed Info (optional) -->
+        <div class="result-card card-breed stagger-4" id="breedInfoCard" style="display:none;">
+          <div class="card-head">
+            <h3><i class="fas fa-info-circle"></i> Breed Information</h3>
+          </div>
+          <div class="card-body">
+            <div class="breed-info-grid" id="breedInfoGrid"></div>
+          </div>
+        </div>
+
+        <!-- AI Reasoning -->
+        <div class="result-card card-reasoning stagger-5">
+          <div class="card-head">
+            <h3><i class="fas fa-brain"></i> AI Reasoning</h3>
+          </div>
+          <div class="card-body">
+            <p class="reasoning-text" id="reasoningText"></p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ─── ERROR SECTION ─── -->
+      <section class="panel error-panel" id="errorSection" style="display:none;" aria-label="Error" aria-live="assertive">
+        <div class="error-inner">
+          <div class="error-icon-wrap">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3 class="error-title">Analysis Failed</h3>
+          <p class="error-msg" id="errorMessage">Something went wrong. Please try again.</p>
+          <button class="btn btn-retry" id="retryBtn" type="button">
+            <i class="fas fa-redo"></i>
+            Try Again
+          </button>
+        </div>
+      </section>
+
+    </div><!-- /container -->
+  </main>
+
+  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>About</h4>
+          <p>AI-powered breed recognition system developed for the Government of India's livestock management initiative.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="/docs"><i class="fas fa-book"></i> API Documentation</a></li>
+            <li><a href="/breeds"><i class="fas fa-dna"></i> Supported Breeds</a></li>
+            <li><a href="#" id="aboutLink"><i class="fas fa-info-circle"></i> About System</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#" id="helpLink"><i class="fas fa-life-ring"></i> Help Center</a></li>
+            <li><a href="#" id="contactLink"><i class="fas fa-envelope"></i> Contact Support</a></li>
+            <li><a href="#" id="feedbackLink"><i class="fas fa-comment-dots"></i> Send Feedback</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Bharat Pashudhan App · Powered by AI</p>
+        <p>Developed for field workers and veterinary professionals</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="alert" aria-live="polite">
+    <span class="toast-icon" id="toastIcon"><i class="fas fa-check-circle"></i></span>
+    <span class="toast-msg" id="toastMessage"></span>
+  </div>
+
+  <script src="script.js"></script>
 </body>
-
 </html>
