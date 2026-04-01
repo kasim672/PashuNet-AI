@@ -1,0 +1,99 @@
+# Buffalo Breed Recognition Configuration
+# Mode: hybrid (two-stage: animal type → breed) or legacy (single-stage: breed only)
+
+# System Mode
+mode: "hybrid"  # Options: "hybrid" (recommended), "legacy"
+
+# Dataset Configuration
+dataset:
+  root_dir: "dataset"  # Use "dataset" for hybrid mode (cattle+buffalo) or "buffalo" for legacy mode
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  random_seed: 42
+  min_images_per_class: 50  # Classes with fewer images will be flagged
+  
+  # Hybrid mode settings
+  hybrid_mode: true  # Enable two-stage classification (cattle vs buffalo, then breed)
+  binary_classifier: true  # Train binary classifier for animal type detection
+
+# Image Configuration
+image:
+  input_size: 224
+  mean: [0.485, 0.456, 0.406]  # ImageNet normalization
+  std: [0.229, 0.224, 0.225]
+
+# Data Augmentation
+augmentation:
+  train:
+    horizontal_flip: 0.5
+    rotation_limit: 15
+    brightness_contrast: 0.2
+    blur_limit: 3
+    noise: 0.05
+  val:
+    enabled: false
+  test:
+    enabled: false
+
+# Model Configuration
+model:
+  architecture: "mobilenet_v2"  # Options: mobilenet_v2, efficientnet_b0, efficientnet_b2
+  pretrained: true
+  dropout: 0.3
+  freeze_backbone: true  # Freeze initially, unfreeze later for fine-tuning
+
+# Training Configuration
+training:
+  batch_size: 32
+  num_epochs: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: "adam"  # Options: adam, sgd, adamw
+  scheduler: "cosine"  # Options: cosine, step, plateau
+  early_stopping_patience: 10
+  gradient_clip: 1.0
+  
+  # Class imbalance handling
+  use_weighted_loss: true
+  label_smoothing: 0.1
+
+# Fine-tuning Configuration
+fine_tuning:
+  enabled: true
+  start_epoch: 20
+  learning_rate: 0.0001
+  unfreeze_layers: 50  # Number of layers to unfreeze from the end
+
+# Evaluation Configuration
+evaluation:
+  top_k: 3  # Top-K predictions
+  confidence_threshold: 0.5
+  save_confusion_matrix: true
+  save_classification_report: true
+
+# Inference Configuration
+inference:
+  model_path: "models/best_model.pth"
+  device: "cuda"  # Options: cuda, cpu
+  batch_size: 1
+  enable_gradcam: false  # Enable for explainability
+
+# Deployment Configuration
+deployment:
+  api_host: "0.0.0.0"
+  api_port: 8000
+  max_image_size: 10485760  # 10MB in bytes
+  allowed_extensions: [".jpg", ".jpeg", ".png"]
+  
+# Logging Configuration
+logging:
+  log_dir: "logs"
+  tensorboard: true
+  save_frequency: 5  # Save model every N epochs
+
+# Output Configuration
+output:
+  model_dir: "models"
+  results_dir: "results"
+  plots_dir: "plots"

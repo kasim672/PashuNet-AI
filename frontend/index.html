@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat Pashudhan App - Breed Recognition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1>🐃 Bharat Pashudhan App</h1>
+                <p>AI-Powered Breed Recognition System</p>
+            </div>
+            <div class="status" id="status">
+                <span class="status-indicator" id="statusIndicator">●</span>
+                <span id="statusText">Checking...</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <h2>Upload Animal Images</h2>
+                <p class="subtitle">Upload one or multiple images for accurate breed identification</p>
+
+                <div class="upload-modes">
+                    <button class="mode-btn active" onclick="setMode('single')" id="singleModeBtn">
+                        📷 Single Image
+                    </button>
+                    <button class="mode-btn" onclick="setMode('multi')" id="multiModeBtn">
+                        📸 Multiple Images
+                    </button>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" accept="image/*" multiple hidden>
+                    <div class="upload-content" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">📁</div>
+                        <p class="upload-text">Click to upload or drag and drop</p>
+                        <p class="upload-hint">Supported: JPG, JPEG, PNG (Max 10MB per image)</p>
+                    </div>
+                </div>
+
+                <div class="preview-container" id="previewContainer"></div>
+
+                <div class="action-buttons" id="actionButtons" style="display: none;">
+                    <button class="btn btn-primary" onclick="predictImages()" id="predictBtn">
+                        🔍 Identify Breed
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearImages()">
+                        🗑️ Clear All
+                    </button>
+                </div>
+
+                <div class="aggregation-options" id="aggregationOptions" style="display: none;">
+                    <label>Aggregation Method:</label>
+                    <select id="aggregationMethod">
+                        <option value="average">Average Probability</option>
+                        <option value="voting">Majority Voting</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h2>Identification Results</h2>
+
+                <!-- Final Prediction -->
+                <div class="final-prediction" id="finalPrediction">
+                    <div class="prediction-header">
+                        <h3>Final Prediction</h3>
+                        <span class="decision-badge" id="decisionBadge">ACCEPTED</span>
+                    </div>
+                    <div class="prediction-content">
+                        <div class="breed-name" id="breedName">Murrah</div>
+                        <div class="confidence-meter">
+                            <div class="confidence-bar" id="confidenceBar"></div>
+                            <span class="confidence-text" id="confidenceText">92%</span>
+                        </div>
+                        <div class="animal-type" id="animalType">Buffalo</div>
+                    </div>
+                </div>
+
+                <!-- Decision Support -->
+                <div class="decision-support" id="decisionSupport">
+                    <h4>📋 Decision Support</h4>
+                    <div class="decision-message" id="decisionMessage"></div>
+                    <div class="recommendation" id="recommendation"></div>
+                </div>
+
+                <!-- Reasoning -->
+                <div class="reasoning-section" id="reasoningSection">
+                    <h4>🔍 Identification Reasoning</h4>
+                    <p id="reasoning"></p>
+                </div>
+
+                <!-- Top Predictions -->
+                <div class="top-predictions" id="topPredictions">
+                    <h4>📊 Top Predictions</h4>
+                    <div class="predictions-list" id="predictionsList"></div>
+                </div>
+
+                <!-- Breed Information -->
+                <div class="breed-info" id="breedInfo" style="display: none;">
+                    <h4>📖 Breed Information</h4>
+                    <div class="info-grid" id="infoGrid"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadResults()">
+                        💾 Download Results (JSON)
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetApp()">
+                        🔄 New Prediction
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing images...</p>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 Bharat Pashudhan App | AI-Powered Breed Recognition</p>
+            <p>Developed for field workers and veterinary professionals</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
